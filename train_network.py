@@ -502,6 +502,7 @@ def train(args):
         # Predict the noise residual
         with accelerator.autocast():
           noise_pred = unet(noisy_latents, timesteps, encoder_hidden_states).sample
+          ic(noise_pred.shape)
 
         if args.v_parameterization:
           # v-parameterization training
@@ -511,18 +512,26 @@ def train(args):
 
         loss = torch.nn.functional.mse_loss(noise_pred.float(), target.float(), reduction="none")
         ic(loss.shape)
+        #ic| loss.shape: torch.Size([2, 4, 112, 80])
         
         loss = loss.mean([1, 2, 3])
         ic(loss.shape)
+        #ic| loss.shape: torch.Size([2])
 
         loss_weights = batch["loss_weights"]                      # 各sampleごとのweight
         loss = loss * loss_weights
         ic(loss.shape)
+        #ic| loss.shape: torch.Size([2])
 
         loss = loss.mean()                # 平均なのでbatch_sizeで割る必要なし
         ic(loss.shape)
+        #ic| loss.shape: torch.Size([])
         
-        break
+        #break
+
+        
+        
+        
         
         accelerator.backward(loss)
         if accelerator.sync_gradients and args.max_grad_norm != 0.0:
