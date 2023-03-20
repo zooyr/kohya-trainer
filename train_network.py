@@ -23,7 +23,7 @@ from library.config_util import (
     ConfigSanitizer,
     BlueprintGenerator,
 )
-
+from icecream import ic
 
 def collate_fn(examples):
   return examples[0]
@@ -510,13 +510,20 @@ def train(args):
           target = noise
 
         loss = torch.nn.functional.mse_loss(noise_pred.float(), target.float(), reduction="none")
+        ic(loss.shape)
+        
         loss = loss.mean([1, 2, 3])
+        ic(loss.shape)
 
         loss_weights = batch["loss_weights"]                      # 各sampleごとのweight
         loss = loss * loss_weights
+        ic(loss.shape)
 
         loss = loss.mean()                # 平均なのでbatch_sizeで割る必要なし
-
+        ic(loss.shape)
+        
+        break
+        
         accelerator.backward(loss)
         if accelerator.sync_gradients and args.max_grad_norm != 0.0:
           params_to_clip = network.get_trainable_params()
