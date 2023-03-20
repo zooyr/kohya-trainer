@@ -509,6 +509,7 @@ def train(args):
           target = noise_scheduler.get_velocity(latents, noise, timesteps)
         else:
           target = noise
+        ic(target.shape)
 
         loss = torch.nn.functional.mse_loss(noise_pred.float(), target.float(), reduction="none")
         ic(loss.shape)
