@@ -471,7 +471,7 @@ def train(args):
     network.on_epoch_start(text_encoder, unet)
 
     for step, batch in enumerate(train_dataloader):
-        for key in batch:
+      for key in batch:
             ic(key)
     
     
