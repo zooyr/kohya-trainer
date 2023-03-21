@@ -944,7 +944,8 @@ class FineTuningDataset(BaseDataset):
         if not subset.color_aug and not subset.random_crop:
           # if npz exists, use them
           image_info.latents_npz, image_info.latents_npz_flipped = self.image_key_to_npz_file(subset, image_key)
-
+        
+        image_info.mask_path = 'image_info.mask_path'
         self.register_image(image_info, subset)
         ic()
 
