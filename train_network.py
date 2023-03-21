@@ -473,6 +473,7 @@ def train(args):
     for step, batch in enumerate(train_dataloader):
       for key in batch:
             ic(key)
+      ipdb.set_trace()
     
     
       with accelerator.accumulate(network):
