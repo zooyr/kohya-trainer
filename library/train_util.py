@@ -651,6 +651,8 @@ class BaseDataset(torch.utils.data.Dataset):
       return None
 
     ic(image_info.absolute_path)
+    ic(image_info.latents)
+    ic(image_info.latents_npz)
     return np.load(npz_file)['arr_0']
 
   def load_masks_from_npy(self, image_info: ImageInfo):
