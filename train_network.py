@@ -471,7 +471,10 @@ def train(args):
     network.on_epoch_start(text_encoder, unet)
 
     for step, batch in enumerate(train_dataloader):
-      ipdb.set_trace(context=6) 
+        for key in batch:
+            ic(key)
+    
+    
       with accelerator.accumulate(network):
         with torch.no_grad():
           if "latents" in batch and batch["latents"] is not None:
