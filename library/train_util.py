@@ -428,7 +428,7 @@ class BaseDataset(torch.utils.data.Dataset):
     return input_ids
 
   def register_image(self, info: ImageInfo, subset: BaseSubset):
-    ic(register_image)
+    ic('register_image func')
     self.image_data[info.image_key] = info
     self.image_to_subset[info.image_key] = subset
 
