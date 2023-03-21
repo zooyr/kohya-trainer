@@ -647,7 +647,15 @@ class BaseDataset(torch.utils.data.Dataset):
     npz_file = image_info.latents_npz_flipped if flipped else image_info.latents_npz
     if npz_file is None:
       return None
+
+    ic(image_info.keys())
     return np.load(npz_file)['arr_0']
+
+  def load_masks_from_npy(self, image_info: ImageInfo):
+    npy_file = image_info.masks_npy
+    if npy_file is None:
+      return None
+    return np.load(npy_file)
 
   def __len__(self):
     return self._length
@@ -662,6 +670,7 @@ class BaseDataset(torch.utils.data.Dataset):
     input_ids_list = []
     latents_list = []
     images = []
+    
 
     for image_key in bucket[image_index:image_index + bucket_batch_size]:
       image_info = self.image_data[image_key]
@@ -736,6 +745,8 @@ class BaseDataset(torch.utils.data.Dataset):
     if self.debug_dataset:
       example['image_keys'] = bucket[image_index:image_index + self.batch_size]
       example['captions'] = captions
+
+    example['masks'] = None
     return example
 
 
