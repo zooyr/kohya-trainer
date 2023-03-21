@@ -24,6 +24,7 @@ from library.config_util import (
     BlueprintGenerator,
 )
 from icecream import ic
+import ipdb
 
 def collate_fn(examples):
   return examples[0]
@@ -470,6 +471,7 @@ def train(args):
     network.on_epoch_start(text_encoder, unet)
 
     for step, batch in enumerate(train_dataloader):
+    ipdb.set_trace(context=6) 
       with accelerator.accumulate(network):
         with torch.no_grad():
           if "latents" in batch and batch["latents"] is not None:
@@ -510,7 +512,7 @@ def train(args):
         else:
           target = noise
         ic(target.shape)
-
+        
         loss = torch.nn.functional.mse_loss(noise_pred.float(), target.float(), reduction="none")
         ic(loss.shape)
         #ic| loss.shape: torch.Size([2, 4, 112, 80])
