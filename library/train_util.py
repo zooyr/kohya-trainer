@@ -854,6 +854,7 @@ class DreamBoothDataset(BaseDataset):
           reg_infos.append(info)
         else:
           self.register_image(info, subset)
+          ic()
 
       subset.img_count = len(img_paths)
       self.subsets.append(subset)
@@ -875,6 +876,7 @@ class DreamBoothDataset(BaseDataset):
         for info in reg_infos:
           if first_loop:
             self.register_image(info, subset)
+            ic()
             n += info.num_repeats
           else:
             info.num_repeats += 1
@@ -944,6 +946,7 @@ class FineTuningDataset(BaseDataset):
           image_info.latents_npz, image_info.latents_npz_flipped = self.image_key_to_npz_file(subset, image_key)
 
         self.register_image(image_info, subset)
+        ic()
 
       self.num_train_images += len(metadata) * subset.num_repeats
 
