@@ -928,6 +928,7 @@ class FineTuningDataset(BaseDataset):
         # path情報を作る
         if os.path.exists(image_key):
           abs_path = image_key
+          ic(abs_path)
         else:
           # わりといい加減だがいい方法が思いつかん
           abs_path = glob_images(subset.image_dir, image_key)
@@ -944,6 +945,7 @@ class FineTuningDataset(BaseDataset):
         assert caption is not None and len(caption) > 0, f"caption or tag is required / キャプションまたはタグは必須です:{abs_path}"
 
         image_info = ImageInfo(image_key, subset.num_repeats, caption, False, abs_path)
+        ic(image_info.abs_path)
         image_info.image_size = img_md.get('train_resolution')
 
         if not subset.color_aug and not subset.random_crop:
