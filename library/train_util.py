@@ -667,8 +667,8 @@ class BaseDataset(torch.utils.data.Dataset):
     
     if mask.exists() is False:
       ic('mask not exist')  
-      ic(mask)
-      return np.zeros(5)
+      latent_shape = np.load(latent_npz_path)['arr_0'].shape
+      return np.ones(latent_shape)
     return np.load(npz_file)['arr_0']
 
   def __len__(self):
