@@ -687,10 +687,12 @@ class BaseDataset(torch.utils.data.Dataset):
       if image_info.latents is not None:
         latents = image_info.latents if not subset.flip_aug or random.random() < .5 else image_info.latents_flipped
         image = None
+        ic("load image_info.latents")
       elif image_info.latents_npz is not None:
         latents = self.load_latents_from_npz(image_info, subset.flip_aug and random.random() >= .5)
         latents = torch.FloatTensor(latents)
         image = None
+        ic("load image_info.latents_npz")
       else:
         # 画像を読み込み、必要ならcropする
         img, face_cx, face_cy, face_w, face_h = self.load_image_with_face_info(subset, image_info.absolute_path)
@@ -898,7 +900,6 @@ class FineTuningDataset(BaseDataset):
     self.num_train_images = 0
     self.num_reg_images = 0
     
-    ic(dir(subsets))
     for subset in subsets:
       ic(dir(subset))
       if subset.num_repeats < 1:

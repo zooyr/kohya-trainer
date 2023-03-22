@@ -479,6 +479,8 @@ def train(args):
       with accelerator.accumulate(network):
         with torch.no_grad():
           if "latents" in batch and batch["latents"] is not None:
+            ic()
+            ic(latents.shape)
             latents = batch["latents"].to(accelerator.device)
           else:
             # latentに変換
@@ -504,6 +506,8 @@ def train(args):
         # Add noise to the latents according to the noise magnitude at each timestep
         # (this is the forward diffusion process)
         noisy_latents = noise_scheduler.add_noise(latents, noise, timesteps)
+        ic()
+        ic(noisy_latents.shape)
 
         # Predict the noise residual
         with accelerator.autocast():
