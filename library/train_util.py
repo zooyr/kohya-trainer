@@ -666,7 +666,8 @@ class BaseDataset(torch.utils.data.Dataset):
     npz_file = str(mask)
     
     if mask.exists() is False:
-      ic(mask + 'not exist')
+      ic('mask not exist')  
+      ic(mask)
       return np.zeros(5)
     return np.load(npz_file)['arr_0']
 
