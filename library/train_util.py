@@ -923,6 +923,8 @@ class FineTuningDataset(BaseDataset):
       ic(metadata.items())
       tags_list = []
       for image_key, img_md in metadata.items():
+        ic(image_key)
+        ic(img_md)
         # path情報を作る
         if os.path.exists(image_key):
           abs_path = image_key
