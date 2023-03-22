@@ -945,7 +945,7 @@ class FineTuningDataset(BaseDataset):
         assert caption is not None and len(caption) > 0, f"caption or tag is required / キャプションまたはタグは必須です:{abs_path}"
 
         image_info = ImageInfo(image_key, subset.num_repeats, caption, False, abs_path)
-        ic(image_info.abs_path)
+        ic(image_info.absolute_path)
         image_info.image_size = img_md.get('train_resolution')
 
         if not subset.color_aug and not subset.random_crop:
