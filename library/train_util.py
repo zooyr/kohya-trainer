@@ -898,7 +898,7 @@ class FineTuningDataset(BaseDataset):
     self.num_train_images = 0
     self.num_reg_images = 0
     
-    ic(subsets)
+    ic(subsets.items())
     for subset in subsets:
       ic(subset)
       if subset.num_repeats < 1:
