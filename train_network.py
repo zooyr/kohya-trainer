@@ -521,6 +521,7 @@ def train(args):
           target = noise
         ic(target.shape)
         
+        ic(batch["masks"])
         loss = torch.nn.functional.mse_loss(noise_pred.float(), target.float(), reduction="none")
         ic(loss.shape)
         #ic| loss.shape: torch.Size([2, 4, 112, 80])

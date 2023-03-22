@@ -47,6 +47,7 @@ import safetensors.torch
 import library.model_util as model_util
 
 from icecream import ic
+from pathlib import Path
 
 # Tokenizer: checkpointから読み込むのではなくあらかじめ提供されているものを使う
 TOKENIZER_PATH = "openai/clip-vit-large-patch14"
@@ -67,7 +68,7 @@ IMAGE_EXTENSIONS = [".png", ".jpg", ".jpeg", ".webp", ".bmp"]
 
 
 class ImageInfo():
-  def __init__(self, image_key: str, num_repeats: int, caption: str, is_reg: bool, absolute_path: str) -> None:
+  def __init__(self, image_key: str, num_repeats: int, caption: str, is_reg: bool, absolute_path: str, m_absolute_path: str) -> None:
     self.image_key: str = image_key
     self.num_repeats: int = num_repeats
     self.caption: str = caption
@@ -80,6 +81,7 @@ class ImageInfo():
     self.latents_flipped: torch.Tensor = None
     self.latents_npz: str = None
     self.latents_npz_flipped: str = None
+    self.masks_npy: str = m_absolute_path
 
 
 class BucketManager():
@@ -654,14 +656,20 @@ class BaseDataset(torch.utils.data.Dataset):
     ic(image_info.absolute_path)
     ic(image_info.latents)
     ic(image_info.latents_npz)
-    ic(image_info.mask_path)
+    
     return np.load(npz_file)['arr_0']
 
-  def load_masks_from_npy(self, image_info: ImageInfo):
-    npy_file = image_info.masks_npy
-    if npy_file is None:
+  def load_masks_from_npz(self, image_info: ImageInfo):
+    # image_info.latents_npz: '/content/drive/MyDrive/sav_sel/00001-00013-3.npz'
+    latent_npz_path = Path(image_info.latents_npz)
+    masks_dir = Path(str(latent_npz_path.parent) + '_m')
+    mask = masks_dir / latent_npz_path.name
+    npz_file = str(mask)
+    
+    if mask.exists() is False:
+      ic(str(mask) + 'not exist')
       return None
-    return np.load(npy_file)
+    return np.load(npz_file)['arr_0']
 
   def __len__(self):
     return self._length
@@ -676,6 +684,7 @@ class BaseDataset(torch.utils.data.Dataset):
     input_ids_list = []
     latents_list = []
     images = []
+    masks_list = []
     
 
     for image_key in bucket[image_index:image_index + bucket_batch_size]:
@@ -693,6 +702,9 @@ class BaseDataset(torch.utils.data.Dataset):
         latents = torch.FloatTensor(latents)
         image = None
         ic("load image_info.latents_npz")
+        
+        masks = self.load_masks_from_npz(image_info)
+        masks = torch.FloatTensor(masks)
       else:
         # 画像を読み込み、必要ならcropする
         img, face_cx, face_cy, face_w, face_h = self.load_image_with_face_info(subset, image_info.absolute_path)
@@ -725,6 +737,7 @@ class BaseDataset(torch.utils.data.Dataset):
 
       images.append(image)
       latents_list.append(latents)
+      masks_list.append(masks)
 
       caption = self.process_caption(subset, image_info.caption)
       captions.append(caption)
@@ -749,12 +762,14 @@ class BaseDataset(torch.utils.data.Dataset):
     example['images'] = images
 
     example['latents'] = torch.stack(latents_list) if latents_list[0] is not None else None
+    example['masks'] = torch.stack(masks_list) if masks_list[0] is not None else None
 
     if self.debug_dataset:
       example['image_keys'] = bucket[image_index:image_index + self.batch_size]
       example['captions'] = captions
+     
 
-    example['masks'] = None
+    
     return example
 
 
@@ -827,6 +842,9 @@ class DreamBoothDataset(BaseDataset):
       self.set_tag_frequency(os.path.basename(subset.image_dir), captions)         # タグ頻度を記録
 
       return img_paths, captions
+    
+    def load_masks_dir():
+      pass
 
     print("prepare images.")
     num_train_images = 0
@@ -850,7 +868,8 @@ class DreamBoothDataset(BaseDataset):
         num_reg_images += subset.num_repeats * len(img_paths)
       else:
         num_train_images += subset.num_repeats * len(img_paths)
-
+      
+      
       for img_path, caption in zip(img_paths, captions):
         info = ImageInfo(img_path, subset.num_repeats, caption, subset.is_reg, img_path)
         if subset.is_reg:
@@ -955,7 +974,6 @@ class FineTuningDataset(BaseDataset):
           # if npz exists, use them
           image_info.latents_npz, image_info.latents_npz_flipped = self.image_key_to_npz_file(subset, image_key)
         
-        image_info.mask_path = 'image_info.mask_path'
         self.register_image(image_info, subset)
         ic()
 
