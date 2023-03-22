@@ -928,14 +928,12 @@ class FineTuningDataset(BaseDataset):
         # path情報を作る
         if os.path.exists(image_key):
           abs_path = image_key
-          ic(abs_path)
-          ic()
         else:
           # わりといい加減だがいい方法が思いつかん
           abs_path = glob_images(subset.image_dir, image_key)
           assert len(abs_path) >= 1, f"no image / 画像がありません: {image_key}"
           abs_path = abs_path[0]
-          ic()
+          ic(abs_path)
 
         caption = img_md.get('caption')
         tags = img_md.get('tags')
