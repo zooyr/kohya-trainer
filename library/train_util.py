@@ -762,6 +762,8 @@ class BaseDataset(torch.utils.data.Dataset):
     example['images'] = images
 
     example['latents'] = torch.stack(latents_list) if latents_list[0] is not None else None
+    ic('latents_list[0].shape)
+    ic(latents_list[0].shape)
     example['masks'] = torch.stack(masks_list) if masks_list[0] is not None else None
 
     if self.debug_dataset:
