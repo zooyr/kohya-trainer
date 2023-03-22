@@ -898,9 +898,9 @@ class FineTuningDataset(BaseDataset):
     self.num_train_images = 0
     self.num_reg_images = 0
     
-    ic(subsets)
+    ic(dir(subsets))
     for subset in subsets:
-      ic(subset)
+      ic(dir(subset))
       if subset.num_repeats < 1:
         print(f"ignore subset with metadata_file='{subset.metadata_file}': num_repeats is less than 1 / num_repeatsが1を下回っているためサブセットを無視します: {subset.num_repeats}")
         continue
