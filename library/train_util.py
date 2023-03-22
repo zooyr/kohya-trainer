@@ -68,7 +68,7 @@ IMAGE_EXTENSIONS = [".png", ".jpg", ".jpeg", ".webp", ".bmp"]
 
 
 class ImageInfo():
-  def __init__(self, image_key: str, num_repeats: int, caption: str, is_reg: bool, absolute_path: str, m_absolute_path: str) -> None:
+  def __init__(self, image_key: str, num_repeats: int, caption: str, is_reg: bool, absolute_path: str) -> None:
     self.image_key: str = image_key
     self.num_repeats: int = num_repeats
     self.caption: str = caption
@@ -81,7 +81,6 @@ class ImageInfo():
     self.latents_flipped: torch.Tensor = None
     self.latents_npz: str = None
     self.latents_npz_flipped: str = None
-    self.masks_npy: str = m_absolute_path
 
 
 class BucketManager():
