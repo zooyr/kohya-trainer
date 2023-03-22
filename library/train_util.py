@@ -918,7 +918,9 @@ class FineTuningDataset(BaseDataset):
       if len(metadata) < 1:
         print(f"ignore subset with '{subset.metadata_file}': no image entries found / 画像に関するデータが見つからないためサブセットを無視します")
         continue
-
+      
+      
+      ic(metadata.items())
       tags_list = []
       for image_key, img_md in metadata.items():
         # path情報を作る
