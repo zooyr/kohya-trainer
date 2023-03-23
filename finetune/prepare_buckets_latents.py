@@ -84,6 +84,7 @@ def main(args):
   image_paths = train_util.glob_images(args.train_data_dir)
   print(f"found {len(image_paths)} images.")
   
+  global mask_mode
   mask_mode = is_creating_mask(image_paths[0])
 
   if os.path.exists(args.in_json):
