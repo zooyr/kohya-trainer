@@ -49,6 +49,8 @@ def get_latents(vae, images, weight_dtype):
   
   with torch.no_grad():
     latents = vae.encode(img_tensors).latent_dist.sample().float().to("cpu").numpy()
+    
+  ic(latents)
   return latents
   
 def is_creating_mask(img_path):
@@ -57,10 +59,7 @@ def is_creating_mask(img_path):
   return Path(p).match('*_m') 
   
 def get_masks(images, weight_dtype):
-  #img_tensors = [m_IMAGE_TRANSFORMS(image).unsqueeze(0).repeat(4,1,1) for image in images]
-  img_tensors = [m_IMAGE_TRANSFORMS(image) for image in images]
-  
-  ic(img_tensors[0].shape)
+  img_tensors = [m_IMAGE_TRANSFORMS(image).repeat(4,1,1) for image in images]
   
   masks = img_tensors.float().to("cpu").numpy()
 
