@@ -23,6 +23,7 @@ IMAGE_TRANSFORMS = transforms.Compose(
 
 
 def collate_fn_remove_corrupted(batch):
+  ic('func collate_fn_remove_corrupted')
   """Collate function that allows to remove corrupted examples in the
   dataloader. It expects that the dataloader returns 'None' when that occurs.
   The 'None's in the batch are removed.
@@ -33,11 +34,16 @@ def collate_fn_remove_corrupted(batch):
 
 
 def get_latents(vae, images, weight_dtype):
+  ic('func get_latents')
   img_tensors = [IMAGE_TRANSFORMS(image) for image in images]
+  ic(img_tensors)
   img_tensors = torch.stack(img_tensors)
+  ic(img_tensors)
   img_tensors = img_tensors.to(DEVICE, weight_dtype)
+  ic(img_tensors)
   with torch.no_grad():
     latents = vae.encode(img_tensors).latent_dist.sample().float().to("cpu").numpy()
+  ic(latents)
   return latents
 
 
@@ -92,6 +98,7 @@ def main(args):
   img_ar_errors = []
 
   def process_batch(is_last):
+    ic('func process_batch')
     for bucket in bucket_manager.buckets:
       if (is_last and len(bucket) > 0) or len(bucket) >= args.batch_size:
         latents = get_latents(vae, [img for _, img in bucket], weight_dtype)
@@ -121,10 +128,12 @@ def main(args):
 
   # 読み込みの高速化のためにDataLoaderを使うオプション
   if args.max_data_loader_n_workers is not None:
+    ic('if 読み込みの高速化のためにDataLoaderを使うオプション')
     dataset = train_util.ImageLoadingDataset(image_paths)
     data = torch.utils.data.DataLoader(dataset, batch_size=1, shuffle=False,
                                        num_workers=args.max_data_loader_n_workers, collate_fn=collate_fn_remove_corrupted, drop_last=False)
   else:
+    ic('else 読み込みの高速化のためにDataLoaderを使うオプション')
     data = [[(None, ip)] for ip in image_paths]
 
   bucket_counts = {}
@@ -158,6 +167,7 @@ def main(args):
     metadata[image_key]['train_resolution'] = (reso[0] - reso[0] % 8, reso[1] - reso[1] % 8)
 
     if not args.bucket_no_upscale:
+      ic('bucket_no_upscale')
       # upscaleを行わないときには、resize後のサイズは、bucketのサイズと、縦横どちらかが同じであることを確認する
       assert resized_size[0] == reso[0] or resized_size[1] == reso[
           1], f"internal error, resized size not match: {reso}, {resized_size}, {image.width}, {image.height}"
@@ -169,6 +179,7 @@ def main(args):
 
     # 既に存在するファイルがあればshapeを確認して同じならskipする
     if args.skip_existing:
+      ic('skip_existing')
       npz_files = [get_npz_filename_wo_ext(args.train_data_dir, image_key, args.full_path, False) + ".npz"]
       if args.flip_aug:
         npz_files.append(get_npz_filename_wo_ext(args.train_data_dir, image_key, args.full_path, True) + ".npz")
