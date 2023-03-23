@@ -21,6 +21,7 @@ IMAGE_TRANSFORMS = transforms.Compose(
     ]
 )
 
+from icecream import ic
 
 def collate_fn_remove_corrupted(batch):
   ic('func collate_fn_remove_corrupted')
