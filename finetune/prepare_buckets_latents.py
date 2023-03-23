@@ -130,7 +130,7 @@ def main(args):
           latents = get_masks([img for _, img in bucket], weight_dtype)
         else:
           latents = get_latents(vae, [img for _, img in bucket], weight_dtype)
-        assert latents.shape[2] == bucket[0][1].shape[0] // 8 and latents.shape[3] == bucket[0][1].shape[1] // 8, \
+          assert latents.shape[2] == bucket[0][1].shape[0] // 8 and latents.shape[3] == bucket[0][1].shape[1] // 8, \
             f"latent shape {latents.shape}, {bucket[0][1].shape}"
 
         for (image_key, _), latent in zip(bucket, latents):
