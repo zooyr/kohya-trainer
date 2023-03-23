@@ -58,8 +58,9 @@ def is_creating_mask(img_path):
   return Path(p).match('*_m') 
   
 def get_masks(images, weight_dtype):
-  img_tensors = [m_IMAGE_TRANSFORMS(image) for image in images]
+  img_tensors = [image for image in images]
   ic(img_tensors[0])
+  img_tensors = [m_IMAGE_TRANSFORMS(image) for image in images]
   img_tensors = img_tensors.float().to("cpu").numpy()
   
   
