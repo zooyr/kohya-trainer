@@ -21,7 +21,15 @@ IMAGE_TRANSFORMS = transforms.Compose(
     ]
 )
 
+m_IMAGE_TRANSFORMS = transforms.Compose(
+    [
+        transforms.Grayscale(1),
+        transforms.ToTensor(),
+    ]
+)
+
 from icecream import ic
+from pathlib import Path
 
 def collate_fn_remove_corrupted(batch):
   ic('func collate_fn_remove_corrupted')
@@ -35,17 +43,27 @@ def collate_fn_remove_corrupted(batch):
 
 
 def get_latents(vae, images, weight_dtype):
-  ic('func get_latents')
   img_tensors = [IMAGE_TRANSFORMS(image) for image in images]
-  ic(len(img_tensors))
   img_tensors = torch.stack(img_tensors)
-  ic(img_tensors.shape)
   img_tensors = img_tensors.to(DEVICE, weight_dtype)
-  ic(img_tensors.shape)
+  
   with torch.no_grad():
     latents = vae.encode(img_tensors).latent_dist.sample().float().to("cpu").numpy()
-  ic(latents.shape)
   return latents
+  
+def is_creating_mask(img_path):
+  p = Path(img_path).parent.name
+  
+  return p.match('*_m') 
+  
+def get_masks(images, weight_dtype):
+  img_tensors = [m_IMAGE_TRANSFORMS(image).unsqueeze(0).repeat(4,1,1) for image in images]
+  img_tensors = img_tensors.float().to("cpu").numpy()
+
+  return masks 
+
+  
+  
 
 
 def get_npz_filename_wo_ext(data_dir, image_key, is_full_path, flip):
@@ -65,6 +83,8 @@ def main(args):
 
   image_paths = train_util.glob_images(args.train_data_dir)
   print(f"found {len(image_paths)} images.")
+  
+  mask_mode = is_creating_mask(image_paths[0])
 
   if os.path.exists(args.in_json):
     print(f"loading existing metadata: {args.in_json}")
@@ -102,7 +122,10 @@ def main(args):
     ic('func process_batch')
     for bucket in bucket_manager.buckets:
       if (is_last and len(bucket) > 0) or len(bucket) >= args.batch_size:
-        latents = get_latents(vae, [img for _, img in bucket], weight_dtype)
+        if mask_mode:
+          latents = get_masks([img for _, img in bucket], weight_dtype)
+        else:
+          latents = get_latents(vae, [img for _, img in bucket], weight_dtype)
         assert latents.shape[2] == bucket[0][1].shape[0] // 8 and latents.shape[3] == bucket[0][1].shape[1] // 8, \
             f"latent shape {latents.shape}, {bucket[0][1].shape}"
 
@@ -236,9 +259,12 @@ def main(args):
 
   # metadataを書き出して終わり
   print(f"writing metadata: {args.out_json}")
-  with open(args.out_json, "wt", encoding='utf-8') as f:
-    json.dump(metadata, f, indent=2)
-  print("done!")
+  if mask_mode:
+    pass
+  else:
+    with open(args.out_json, "wt", encoding='utf-8') as f:
+      json.dump(metadata, f, indent=2)
+    print("done!")
 
 
 if __name__ == '__main__':
