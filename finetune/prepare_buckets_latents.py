@@ -37,14 +37,14 @@ def collate_fn_remove_corrupted(batch):
 def get_latents(vae, images, weight_dtype):
   ic('func get_latents')
   img_tensors = [IMAGE_TRANSFORMS(image) for image in images]
-  ic(img_tensors)
+  ic(img_tensors.shape)
   img_tensors = torch.stack(img_tensors)
-  ic(img_tensors)
+  ic(img_tensors.shape)
   img_tensors = img_tensors.to(DEVICE, weight_dtype)
-  ic(img_tensors)
+  ic(img_tensors.shape)
   with torch.no_grad():
     latents = vae.encode(img_tensors).latent_dist.sample().float().to("cpu").numpy()
-  ic(latents)
+  ic(latents.shape)
   return latents
 
 
