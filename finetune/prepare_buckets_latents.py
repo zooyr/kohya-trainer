@@ -57,10 +57,11 @@ def is_creating_mask(img_path):
   return Path(p).match('*_m') 
   
 def get_masks(images, weight_dtype):
-  img_tensors = [torch.tensor(m_IMAGE_TRANSFORMS(image)).unsqueeze(0).repeat(4,1,1) for image in images]
+  img_tensors = [m_IMAGE_TRANSFORMS(image) for image in images]
   img_tensors = img_tensors.float().to("cpu").numpy()
 
-  return masks 
+  #return masks 
+  return 
 
   
   
