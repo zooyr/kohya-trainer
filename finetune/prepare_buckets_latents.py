@@ -61,7 +61,7 @@ def is_creating_mask(img_path):
 def get_masks(images, weight_dtype):
   img_tensors = [m_IMAGE_TRANSFORMS(image).repeat(4,1,1) for image in images]
   img_tensors = torch.stack(img_tensors)
-  masks = img_tensor.float().to("cpu").numpy()
+  masks = img_tensors.float().to("cpu").numpy()
 
   return masks 
 
