@@ -44,6 +44,7 @@ def collate_fn_remove_corrupted(batch):
 
 def get_latents(vae, images, weight_dtype):
   img_tensors = [IMAGE_TRANSFORMS(image) for image in images]
+  ic(img_tensors[0])
   img_tensors = torch.stack(img_tensors)
   img_tensors = img_tensors.to(DEVICE, weight_dtype)
   
@@ -58,7 +59,10 @@ def is_creating_mask(img_path):
   
 def get_masks(images, weight_dtype):
   img_tensors = [m_IMAGE_TRANSFORMS(image) for image in images]
+  ic(img_tensors[0])
   img_tensors = img_tensors.float().to("cpu").numpy()
+  
+  
 
   #return masks 
   return 
