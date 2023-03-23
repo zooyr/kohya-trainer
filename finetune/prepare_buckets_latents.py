@@ -60,6 +60,9 @@ def is_creating_mask(img_path):
   
 def get_masks(images, weight_dtype):
   img_tensors = [m_IMAGE_TRANSFORMS(image).repeat(4,1,1) for image in images]
+  img_tensors = [t.unsqueeze(0) for t in img_tensors]
+  img_tensors = [torch.nn.functional.interpolate(t, scale_factor=0.125, mode='nearest-exact') for t in img_tensors]
+  img_tensors = [t.squeeze(0) for t in img_tensors]
   img_tensors = torch.stack(img_tensors)
   masks = img_tensors.float().to("cpu").numpy()
 
@@ -262,10 +265,10 @@ def main(args):
   print(f"mean ar error: {np.mean(img_ar_errors)}")
 
   # metadataを書き出して終わり
-  print(f"writing metadata: {args.out_json}")
   if mask_mode:
     pass
   else:
+    print(f"writing metadata: {args.out_json}")
     with open(args.out_json, "wt", encoding='utf-8') as f:
       json.dump(metadata, f, indent=2)
     print("done!")
