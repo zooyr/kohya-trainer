@@ -524,7 +524,7 @@ def train(args):
         masks = batch["masks"].to(accelerator.device)
         noise_pred = noise_pred * masks
         target = target * masks
-        ic(mask.shape)
+        ic(masks.shape)
         ic(noise_pred.shape)
         ic(target.shape)
         loss = torch.nn.functional.mse_loss(noise_pred.float(), target.float(), reduction="none")
